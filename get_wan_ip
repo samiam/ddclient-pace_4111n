@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+use XML::Twig;
+
+$ROUTER_IP = "192.168.1.254";
+
+my $html = `wget -O - --quiet http://$ROUTER_IP/xslt?PAGE=C_1_0`;
+die "Unable to wget $!" if ($?);
+
+my $twig = XML::Twig->new( twig_handlers => { 'tr' => \&trow } );
+$twig->parse($html);
+
+sub trow {
+  my ($t, $tr) = @_;
+  if ($tr->first_child_text eq "IP Address") {
+    print $tr->last_child_text, "\n";
+  }
+}
